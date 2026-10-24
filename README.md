@@ -292,10 +292,13 @@ Apple now requires sign-in requests to carry a signature that only its own code 
 
 The signing session could not be set up. Re-run with `--verbose` for the underlying cause. If it mentions integrity verification, delete `~/.ipatool/cache/` and try again — a truncated download is the usual reason. If it persists, please open an issue with the verbose output.
 
-**Login fails with HTML or `invalid type: string "<html>", expected a map`.**
+**Login fails with an empty HTTP 204, HTML, or `invalid type: string "<html>", expected a map`.**
 
-Apple or a network intermediary returned an HTML page instead of the Store's
-property list. A `301` without `Location` cannot be followed as a redirect.
+The bare `/wa/authenticate` path can return an empty `204` or HTML instead of
+reaching the Store handler. After validating Apple's bag URL, the client adds
+its canonical trailing `/`, retaining the advertised host and query parameters.
+This follows upstream ipatool's URL normalization. A `301` without `Location`
+cannot be followed as a redirect.
 The client sends the same signed request at most three times, 250 ms apart,
 for non-plist `204`, `404`, `5xx` or redirects without `Location`. It preserves
 real Store replies and does not resend `403` or `429` responses.
