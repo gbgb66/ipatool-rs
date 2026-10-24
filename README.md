@@ -292,6 +292,22 @@ Apple now requires sign-in requests to carry a signature that only its own code 
 
 The signing session could not be set up. Re-run with `--verbose` for the underlying cause. If it mentions integrity verification, delete `~/.ipatool/cache/` and try again — a truncated download is the usual reason. If it persists, please open an issue with the verbose output.
 
+**Login fails with HTML or `invalid type: string "<html>", expected a map`.**
+
+Apple or a network intermediary returned an HTML page instead of the Store's
+property list. A `301` without `Location` cannot be followed as a redirect.
+The client sends the same signed request at most three times, 250 ms apart,
+for non-plist `204`, `404`, `5xx` or redirects without `Location`. It preserves
+real Store replies and does not resend `403` or `429` responses.
+If the failure persists, check your network, VPN or proxy before retrying.
+Diagnostics include the HTTP status, a normalized content type and body length;
+response contents are omitted because they can contain session tokens.
+
+Enter your password only in the local hidden prompt, rather than in command-line
+arguments or a bug report. Successful login still requires valid credentials
+and any two-factor code requested by Apple. An HTML error is a transport or
+response-format failure, not evidence that the password is wrong.
+
 **Which countries/storefronts are supported?**
 
 All storefronts supported by the iTunes Search API. Use `--country <ISO-3166-1-alpha-2>` (e.g. `--country US`, `--country CN`) to target a specific store.
